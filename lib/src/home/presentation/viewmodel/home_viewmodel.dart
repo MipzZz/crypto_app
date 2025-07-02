@@ -12,24 +12,37 @@ class HomeViewModel extends ChangeNotifier {
   final ICryptoRepository _coinsRepository;
 
   UnmodifiableListView<CryptoCoin>? _coins;
+
   UnmodifiableListView<CryptoCoin>? get coins => _coins;
 
   bool _isLoading = false;
-  bool get isLoading => _isLoading;
 
-  Future<void> getCoins() async {
+  bool get isLoading => _isLoading;
+  bool _isError = false;
+
+  bool get isError => _isError;
+
+  Future<void> _getCoins() async {
+    final offset = _coins?.length ?? 0;
+    final coinsChunk = await _coinsRepository.getCoins(offset: offset);
+    _coins = UnmodifiableListView([...(_coins ?? []), ...coinsChunk]);
+  }
+
+  Future<void> getCoins() => _execute(_getCoins);
+
+  Future<void> _execute(Future<void> Function() action) async {
     if (_isLoading) return;
+    _isError = false;
     _isLoading = true;
     notifyListeners();
-    final offset = _coins?.length ?? 0;
     try {
-      final coinsChunk = await _coinsRepository.getCoins(offset: offset);
-      _coins = UnmodifiableListView([...(_coins ?? []), ...coinsChunk]);
+      await action();
     } catch (e) {
+      _isError = true;
       rethrow;
     } finally {
       _isLoading = false;
+      notifyListeners();
     }
-    notifyListeners();
   }
 }
