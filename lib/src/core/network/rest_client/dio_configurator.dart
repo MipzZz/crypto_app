@@ -1,13 +1,20 @@
 import 'dart:io';
 import 'package:crypto_app/src/core/network/interceptors/primary_interceptor.dart';
+import 'package:crypto_app/src/core/network/url.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
+import 'package:injectable/injectable.dart';
 
-class AppDioConfigurator {
+@module
+abstract class AppDioConfigurator {
 
   const AppDioConfigurator();
 
-  Dio create({required String url}) {
+  @Named('baseUrl')
+  String get baseUrl => Url.baseUrl;
+
+  @lazySingleton
+  Dio create(@Named('baseUrl') String url) {
     const timeout = Duration(seconds: 30);
 
     final dio = Dio();

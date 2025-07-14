@@ -10,7 +10,7 @@ class CoinTile extends StatelessWidget {
   });
 
   final String symbol;
-  final double price;
+  final String price;
   final Color color;
 
   @override
@@ -25,7 +25,7 @@ class CoinTile extends StatelessWidget {
             SizedBox(width: 16),
             Text(symbol),
             Spacer(),
-            Text('\$${price.toStringAsFixed(2)}'),
+            Text('\$${price.substring(0, 5)}'),
           ],
         ),
       ),

@@ -1,20 +1,15 @@
-import 'package:crypto_app/src/core/network/rest_client/i_rest_client.dart';
+import 'package:crypto_app/src/core/network/rest_client/rest_client_retrofit.dart';
 import 'package:crypto_app/src/home/domain/entity/crypto_coin.dart';
+import 'package:injectable/injectable.dart';
 
+@LazySingleton()
 final class CoinsDatasource {
-  CoinsDatasource({required IRestClient restClient}) : _restClient = restClient;
+  CoinsDatasource({required RetrofitClient restClient}) : _restClient = restClient;
 
-  final IRestClient _restClient;
+  final RetrofitClient _restClient;
 
   Future<Iterable<CryptoCoin>> getCoins({required int offset, int? limit}) async {
-    final response = await _restClient.get(
-      '/assets',
-      queryParams: {
-        'offset': offset,
-        'limit': limit,
-      },
-    );
-    final coins = response?['data'] as List? ?? <Map<String, dynamic>>[];
-    return coins.map((coin) => CryptoCoin.fromJson(coin));
+    final response = await _restClient.getCoins(limit: limit, offset: offset);
+    return response.coins;
   }
 }
